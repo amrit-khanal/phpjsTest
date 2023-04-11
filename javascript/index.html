@@ -1,0 +1,131 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  </head>
+  <style>
+    .defaultClassName {
+      background-color: #ff0000;
+    }
+    .changedClassName {
+      background-color: rgb(23, 0, 128);
+    }
+  </style>
+</html>
+
+<body>
+  <h4>#1 Change the class name of any dom elements</h4>
+  <button class="defaultClassName" onclick="changeClassName()" id="change-btn">
+    Click Here to chaneg class
+  </button>
+  <br />
+  <h4>#2 Get datasets from dom elements</h4>
+  <a id="link" href="#" data-id="1">click here to get id</a>
+  <a id="link" href="#" data-id="2">click here to get next id</a>
+  <h4>#3 Inject new dom element</h4>
+  <button id="addItm">Add New Item</button>
+  <ul id="itemList">
+    <li>item1</li>
+    <li>item2</li>
+  </ul>
+
+  <h4>#4 Make both ajax and get request</h4>
+  <button id="ajaxRqst">Ajax Request</button>
+  <button id="getRqst">Get Request</button>
+  <h4># 5Get and set values from input box/checkbox/select dropdown</h4>
+  <input type="text" name="userName" value="user" id="userName" />
+  <input type="checkbox" name="status" id="status" value="1" class="status" />
+  <label for="checkbox-1">Status</label>
+
+  <select name="country" id="country">
+    <option value="NP" selected="selected">Nepal</option>
+    <option value="IND">India</option>
+    <option value="US">United states</option>
+  </select>
+
+  <button id="getValue">get value</button>
+  <button id="setValue">set value</button>
+
+  <h4>
+    #5 Make 3 POST requests at the same time which need to be resolved all at
+    the same time.
+  </h4>
+
+  <button id="callApi">Get Data</button>
+
+  <script>
+    function changeClassName() {
+      $('.defaultClassName').attr('class', 'changedClassName')
+    }
+    $('a').click(function () {
+      let id = $(this).attr('data-id')
+      alert(`CLicked ID ${id}`)
+    })
+    $('#addItm').click(function () {
+      $('#itemList').append('<li>New Item</li>')
+    })
+    $('#ajaxRqst').click(function () {
+      $.ajax({
+        url: 'https://data.seattle.gov/resource/4xy5-26gy.json?$order=date%20desc&$limit=10',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+          alert('data fetched successfully which is consoled')
+          console.log(data)
+        },
+        error: function (error) {
+          console.log(`Error ${error}`)
+        }
+      })
+    })
+
+    $('#getRqst').click(function () {
+      $.get(
+        'https://data.seattle.gov/resource/4xy5-26gy.json?$order=date%20desc&$limit=10',
+        function (data, textStatus, jqXHR) {
+          alert('data fetched successfully which is consoled')
+          console.log(data)
+        }
+      )
+    })
+    $('#getValue').click(function () {
+      const user = $('#userName').val()
+      const status = $('#status').is(':checked') ? true : false
+      const country = $('#country').val()
+      alert(
+        `All Input Value  User Name: ${user} Status: ${status} Country: ${country}`
+      )
+    })
+
+    $('#setValue').click(function () {
+      $('#userName').val('New Value ')
+      $('#status').prop('checked', true)
+      $('#country').val('IND')
+      alert('Setting  All with  New Value')
+    })
+
+    $('#callApi').click(function () {
+      //for this asyn await used, this is for old ajax called asynchornously
+      const apiUrl = 'https://jsonplaceholder.typicode.com/posts'
+
+      const api1 = $.post(apiUrl, {
+        title: 'foo',
+        body: 'bar',
+        userId: 1
+      })
+      const api2 = $.post(apiUrl, {
+        title: 'foo',
+        body: 'bar',
+        userId: 2
+      })
+      const api3 = $.post(apiUrl, {
+        title: 'foo',
+        body: 'bar',
+        userId: 3
+      })
+
+      $.when(api1, api2, api3).done(function (ap1, ap2, api3) {
+        alert('api called asynchronously')
+      })
+    })
+  </script>
+</body>
